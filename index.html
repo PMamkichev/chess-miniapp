@@ -1,68 +1,41 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Chess Mini App</title>
+  <title>Chess Test</title>
   <meta charset="UTF-8" />
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  
-  <!-- chess.js для логики -->
-  <script src="https://cdn.jsdelivr.net/npm/chess.js@1.0.0/chess.min.js"></script>
-  
-  <!-- chessboard.js для доски -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" />
-  <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-  
   <style>
     body {
-      background: #000;
-      color: #fff;
+      background: black;
+      color: white;
       font-family: Arial, sans-serif;
-      padding: 10px;
       text-align: center;
+      padding: 20px;
     }
     #board {
       width: 320px;
       margin: 20px auto;
+      border: 1px solid white;
+      height: 320px;
     }
   </style>
 </head>
 <body>
-  <h1>Шахматы в Telegram Mini App</h1>
-  <div id="board"></div>
-  <p id="status"></p>
-  
+  <h1>Тест шахматной доски</h1>
+  <div id="board">Если видишь этот текст, значит div есть</div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" />
+
   <script>
-    const tg = window.Telegram.WebApp;
-    tg.expand();
-    
-    const chess = new Chess();
-    
-    const board = Chessboard('board', {
-      draggable: true,
-      position: 'start',
-      onDrop: function(source, target) {
-        const move = chess.move({ from: source, to: target, promotion: 'q' });
-        if (move === null) return 'snapback';
-        updateStatus();
+    window.onload = function() {
+      if (typeof Chessboard !== 'function') {
+        document.body.innerHTML += '<p style="color:red;">chessboard.js не загрузился!</p>';
+        return;
       }
-    });
-    
-    function updateStatus() {
-      let status = '';
-      if (chess.in_checkmate()) {
-        status = 'Мат! Игра окончена.';
-      } else if (chess.in_draw()) {
-        status = 'Ничья.';
-      } else {
-        status = (chess.turn() === 'w' ? 'Ход белых' : 'Ход чёрных');
-        if (chess.in_check()) {
-          status += ', шах!';
-        }
-      }
-      document.getElementById('status').textContent = status;
-    }
-    
-    updateStatus();
+      const board = Chessboard('board', {
+        position: 'start'
+      });
+    };
   </script>
 </body>
 </html>
