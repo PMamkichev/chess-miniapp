@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Chess Mini App</title>
+    <meta charset="UTF-8" />
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  </head>
+  <body>
+    <h1>Привет из Telegram Mini App 👋</h1>
+    <p id="user"></p>
+
+    <script>
+      const tg = window.Telegram.WebApp;
+      tg.expand();
+      document.getElementById("user").innerText = "Привет, " + tg.initDataUnsafe.user?.first_name;
+    </script>
+  </body>
+</html>
