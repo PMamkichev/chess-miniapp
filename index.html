@@ -1,18 +1,40 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>My Chess Mini App</title>
-    <meta charset="UTF-8" />
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  </head>
-  <body>
-    <h1>Привет из Telegram Mini App 👋</h1>
-    <p id="user"></p>
+<head>
+  <title>My Chess Mini App</title>
+  <meta charset="UTF-8" />
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <style>
+    body {
+      background: #000000; /* чёрный фон */
+      color: #FFFFFF;      /* белый текст */
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Привет из Telegram Mini App 👋</h1>
+  <p id="user">Загрузка...</p>
 
-    <script>
-      const tg = window.Telegram.WebApp;
-      tg.expand();
-      document.getElementById("user").innerText = "Привет, " + tg.initDataUnsafe.user?.first_name;
-    </script>
-  </body>
+  <script>
+    const tg = window.Telegram.WebApp;
+
+    tg.onEvent('themeChanged', () => {
+      if(tg.themeParams.bg_color) {
+        document.body.style.backgroundColor = tg.themeParams.bg_color;
+        document.body.style.color = tg.themeParams.text_color;
+      }
+    });
+
+    tg.expand();
+
+    const user = tg.initDataUnsafe.user;
+    if (user) {
+      document.getElementById('user').innerText = `Привет, ${user.first_name}!`;
+    } else {
+      document.getElementById('user').innerText = 'Привет, гость!';
+    }
+  </script>
+</body>
 </html>
