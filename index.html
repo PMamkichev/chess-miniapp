@@ -1,41 +1,95 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-  <title>Chess Test</title>
   <meta charset="UTF-8" />
+  <title>Шахматы в Telegram Mini App</title>
+
+  <!-- Подключаем стили шахматной доски -->
+  <link rel="stylesheet" href="chessboard.js/css/chessboard-1.0.0.min.css" />
+
   <style>
     body {
-      background: black;
+      background-color: black;
       color: white;
       font-family: Arial, sans-serif;
       text-align: center;
       padding: 20px;
     }
     #board {
-      width: 320px;
+      width: 400px;
       margin: 20px auto;
-      border: 1px solid white;
-      height: 320px;
     }
   </style>
 </head>
 <body>
-  <h1>Тест шахматной доски</h1>
-  <div id="board">Если видишь этот текст, значит div есть</div>
+  <h1>Шахматы в Telegram Mini App</h1>
+  <div id="board"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" />
+  <!-- Подключаем jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- Подключаем chess.js с CDN, чтобы был класс Chess -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <!-- Подключаем chessboard.js -->
+  <script src="chessboard.js/js/chessboard-1.0.0.min.js"></script>
 
   <script>
-    window.onload = function() {
-      if (typeof Chessboard !== 'function') {
-        document.body.innerHTML += '<p style="color:red;">chessboard.js не загрузился!</p>';
-        return;
-      }
+    $(function() {
+      const game = new Chess();
+
       const board = Chessboard('board', {
-        position: 'start'
+        draggable: true,
+        position: 'start',
+        pieceTheme: 'chessboard.js/img/chesspieces/wikipedia/{piece}.png',
+
+        onDragStart: function(source, piece) {
+          if (game.game_over()) return false;
+
+          // Запретить ходить чужими фигурами
+          if ((game.turn() === 'w' && piece[0] === 'b') ||
+              (game.turn() === 'b' && piece[0] === 'w')) {
+            return false;
+          }
+        },
+
+        onDrop: function(source, target) {
+          const move = game.move({
+            from: source,
+            to: target,
+            promotion: 'q' // всегда превращаем в ферзя для простоты
+          });
+
+          // Если ход некорректен — отменяем на доске
+          if (move === null) return 'snapback';
+
+          updateStatus();
+        },
+
+        onSnapEnd: function() {
+          board.position(game.fen());
+        }
       });
-    };
+
+      function updateStatus() {
+        let status = '';
+        let moveColor = game.turn() === 'w' ? 'Белые' : 'Чёрные';
+
+        if (game.in_checkmate()) {
+          status = 'Мат! Победили ' + (moveColor === 'Белые' ? 'Чёрные' : 'Белые');
+        } else if (game.in_stalemate()) {
+          status = 'Пат! Ничья.';
+        } else if (game.in_draw()) {
+          status = 'Ничья!';
+        } else {
+          status = moveColor + ' ходит';
+          if (game.in_check()) {
+            status += ', шах!';
+          }
+        }
+        console.log(status);
+      }
+
+      updateStatus();
+    });
   </script>
 </body>
 </html>
