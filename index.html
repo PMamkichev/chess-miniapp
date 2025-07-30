@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <title>Шахматы в Telegram Mini App</title>
 
-  <link rel="stylesheet" href="./chessboard.js/css/chessboard-1.0.0.min.css">
+  <link rel="stylesheet" href="chessboard.js/css/chessboard-1.0.0.min.css">
 
   <style>
     body {
@@ -35,7 +35,7 @@
   <!-- chess.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
   <!-- chessboard.js -->
-  <script src="./chessboard.js/js/chessboard-1.0.0.min.js"></script>
+  <script src="chessboard.js/js/chessboard-1.0.0.min.js"></script>
 
   <script>
     $(function() {
@@ -44,7 +44,7 @@
       const board = Chessboard('board', {
         draggable: true,
         position: 'start',
-        pieceTheme: './chessboard.js/img/chesspieces/wikipedia/{piece}.png',
+        pieceTheme: 'chessboard.js/img/chesspieces/wikipedia/{piece}.png',
 
         onDragStart: function(source, piece) {
           if (game.game_over()) return false;
