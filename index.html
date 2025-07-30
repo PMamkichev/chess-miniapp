@@ -15,8 +15,8 @@
       padding: 20px;
     }
     #board {
-      width: 100%;
-      max-width: 400px;
+      width: 100vw;
+      max-width: 600px;
       margin: 20px auto;
     }
     #status {
@@ -41,10 +41,17 @@
     $(function() {
       const game = new Chess();
 
-      const board = Chessboard('board', {
+      // Вычисляем ширину доски - минимум из ширины окна и 600px
+      function getBoardWidth() {
+        return Math.min(window.innerWidth, 600);
+      }
+
+      // Создаем доску с начальным размером
+      let board = Chessboard('board', {
         draggable: true,
         position: 'start',
         pieceTheme: 'chessboard.js/img/chesspieces/wikipedia/{piece}.png',
+        width: getBoardWidth(),
 
         onDragStart: function(source, piece) {
           if (game.game_over()) return false;
@@ -71,6 +78,7 @@
         }
       });
 
+      // Функция обновления статуса хода
       function updateStatus() {
         let moveColor = game.turn() === 'w' ? 'Белые' : 'Чёрные';
         let status = '';
@@ -92,6 +100,11 @@
       }
 
       updateStatus();
+
+      // Обработчик изменения размера окна
+      window.addEventListener('resize', () => {
+        board.resize(getBoardWidth());
+      });
     });
   </script>
 </body>
