@@ -13,6 +13,8 @@
       font-family: Arial, sans-serif;
       text-align: center;
       padding: 20px;
+      /* Чтобы при отключении скролла не прыгал контент */
+      overscroll-behavior: contain;
     }
     #board {
       width: 100vw;
@@ -41,12 +43,10 @@
     $(function() {
       const game = new Chess();
 
-      // Вычисляем ширину доски - минимум из ширины окна и 600px
       function getBoardWidth() {
         return Math.min(window.innerWidth, 600);
       }
 
-      // Создаем доску с начальным размером
       let board = Chessboard('board', {
         draggable: true,
         position: 'start',
@@ -54,9 +54,14 @@
         width: getBoardWidth(),
 
         onDragStart: function(source, piece) {
+          // Блокируем скролл страницы при начале драга
+          document.body.style.overflow = 'hidden';
+
           if (game.game_over()) return false;
           if ((game.turn() === 'w' && piece[0] === 'b') ||
               (game.turn() === 'b' && piece[0] === 'w')) {
+            // Разблокируем скролл если ход невалидный
+            document.body.style.overflow = '';
             return false;
           }
         },
@@ -68,6 +73,9 @@
             promotion: 'q'
           });
 
+          // Разблокируем скролл при окончании драга
+          document.body.style.overflow = '';
+
           if (move === null) return 'snapback';
 
           updateStatus();
@@ -78,7 +86,6 @@
         }
       });
 
-      // Функция обновления статуса хода
       function updateStatus() {
         let moveColor = game.turn() === 'w' ? 'Белые' : 'Чёрные';
         let status = '';
@@ -101,7 +108,6 @@
 
       updateStatus();
 
-      // Обработчик изменения размера окна
       window.addEventListener('resize', () => {
         board.resize(getBoardWidth());
       });
