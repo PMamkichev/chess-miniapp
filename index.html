@@ -7,14 +7,16 @@
   <link rel="stylesheet" href="chessboard.js/css/chessboard-1.0.0.min.css">
 
   <style>
-    body {
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
       background-color: black;
       color: white;
       font-family: Arial, sans-serif;
       text-align: center;
-      padding: 20px;
-      /* Чтобы при отключении скролла не прыгал контент */
       overscroll-behavior: contain;
+      touch-action: none; /* Важно для блокировки жестов на мобильных */
     }
     #board {
       width: 100vw;
@@ -39,8 +41,22 @@
   <!-- chessboard.js -->
   <script src="chessboard.js/js/chessboard-1.0.0.min.js"></script>
 
+  <!-- Блокируем глобальные скроллы -->
   <script>
-    $(function() {
+    document.addEventListener('touchmove', function (e) {
+      e.preventDefault();
+    }, { passive: false });
+  </script>
+
+  <script>
+    $(function () {
+      // Настройки Telegram WebApp
+      if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.ready();
+        Telegram.WebApp.setSwipeBackAllowed(false); // запрещаем свайп-назад
+        Telegram.WebApp.setClosingBehavior({ need_confirmation: false }); // отключаем автозакрытие
+      }
+
       const game = new Chess();
 
       function getBoardWidth() {
@@ -53,27 +69,24 @@
         pieceTheme: 'chessboard.js/img/chesspieces/wikipedia/{piece}.png',
         width: getBoardWidth(),
 
-        onDragStart: function(source, piece) {
-          // Блокируем скролл страницы при начале драга
+        onDragStart: function (source, piece) {
           document.body.style.overflow = 'hidden';
 
           if (game.game_over()) return false;
           if ((game.turn() === 'w' && piece[0] === 'b') ||
-              (game.turn() === 'b' && piece[0] === 'w')) {
-            // Разблокируем скролл если ход невалидный
+            (game.turn() === 'b' && piece[0] === 'w')) {
             document.body.style.overflow = '';
             return false;
           }
         },
 
-        onDrop: function(source, target) {
+        onDrop: function (source, target) {
           const move = game.move({
             from: source,
             to: target,
             promotion: 'q'
           });
 
-          // Разблокируем скролл при окончании драга
           document.body.style.overflow = '';
 
           if (move === null) return 'snapback';
@@ -81,7 +94,7 @@
           updateStatus();
         },
 
-        onSnapEnd: function() {
+        onSnapEnd: function () {
           board.position(game.fen());
         }
       });
