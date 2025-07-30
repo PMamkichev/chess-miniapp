@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <title>Шахматы в Telegram Mini App</title>
 
-  <!-- Подключаем стили шахматной доски -->
-  <link rel="stylesheet" href="chessboard.js/css/chessboard-1.0.0.min.css" />
+  <!-- Стили chessboard.js с правильного CDN -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard.min.css" />
 
   <style>
     body {
@@ -13,11 +13,17 @@
       color: white;
       font-family: Arial, sans-serif;
       text-align: center;
+      margin: 0;
       padding: 20px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     #board {
-      width: 400px;
-      margin: 20px auto;
+      width: 100%;
+      max-width: 400px;
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -25,12 +31,12 @@
   <h1>Шахматы в Telegram Mini App</h1>
   <div id="board"></div>
 
-  <!-- Подключаем jQuery -->
+  <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <!-- Подключаем chess.js с CDN, чтобы был класс Chess -->
+  <!-- chess.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
-  <!-- Подключаем chessboard.js -->
-  <script src="chessboard.js/js/chessboard-1.0.0.min.js"></script>
+  <!-- chessboard.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/dist/chessboard.min.js"></script>
 
   <script>
     $(function() {
@@ -39,12 +45,11 @@
       const board = Chessboard('board', {
         draggable: true,
         position: 'start',
-        pieceTheme: 'chessboard.js/img/chesspieces/wikipedia/{piece}.png',
+        pieceTheme: 'https://cdn.jsdelivr.net/npm/chessboardjs@1.0.0/img/chesspieces/wikipedia/{piece}.png',
 
         onDragStart: function(source, piece) {
           if (game.game_over()) return false;
 
-          // Запретить ходить чужими фигурами
           if ((game.turn() === 'w' && piece[0] === 'b') ||
               (game.turn() === 'b' && piece[0] === 'w')) {
             return false;
@@ -55,10 +60,9 @@
           const move = game.move({
             from: source,
             to: target,
-            promotion: 'q' // всегда превращаем в ферзя для простоты
+            promotion: 'q'
           });
 
-          // Если ход некорректен — отменяем на доске
           if (move === null) return 'snapback';
 
           updateStatus();
@@ -70,8 +74,8 @@
       });
 
       function updateStatus() {
-        let status = '';
         let moveColor = game.turn() === 'w' ? 'Белые' : 'Чёрные';
+        let status = '';
 
         if (game.in_checkmate()) {
           status = 'Мат! Победили ' + (moveColor === 'Белые' ? 'Чёрные' : 'Белые');
